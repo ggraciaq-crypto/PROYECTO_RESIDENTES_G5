@@ -1,0 +1,251 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Visita</title>
+
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="{% static 'img/logo.png' %}" alt="Logo">
+            <h2>Residencia</h2>
+        </div>
+
+        <nav>
+            <a href="{% url 'dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="{% url 'residentes' %}"><i class="bi bi-people-fill"></i> Residentes</a>
+            <a href="{% url 'viviendas' %}"><i class="bi bi-house-door-fill"></i> Viviendas</a>
+            <a href="{% url 'visitas' %}" class="active"><i class="bi bi-journal-check"></i> Visitas</a>
+            <a href="#"><i class="bi bi-bar-chart-fill"></i> Reportes</a>
+            <a href="{% url 'login' %}"><i class="bi bi-box-arrow-left"></i> Cerrar sesión</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Editar Visita</h1>
+                <p>Actualización de información de la visita.</p>
+            </div>
+
+            <div class="user-box">
+                <i class="bi bi-person-circle"></i>
+                <span>Administrador</span>
+            </div>
+        </header>
+
+        <section class="panel">
+
+            <h2>Información del visitante</h2>
+
+            <form method="POST" class="form-card">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Nombre del visitante</label>
+                    <input type="text"
+                           name="nombre_visitante"
+                           value="{% if datos %}{{ datos.nombre_visitante }}{% else %}{{ visita.nombre_visitante }}{% endif %}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Cédula</label>
+
+                    <input type="text"
+                           name="documento"
+                           maxlength="10"
+                           value="{% if datos %}{{ datos.documento }}{% else %}{{ visita.documento }}{% endif %}"
+                           class="validar-cedula {% if errores.documento %}input-error{% endif %}"
+                           required>
+
+                    <div class="mensaje-validacion">
+                        {% if errores.documento %}
+                            <div class="error-text">
+                                <i class="bi bi-x-circle-fill"></i>
+                                {{ errores.documento }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-box">
+                        <i class="bi bi-shield-check"></i>
+                        <div>
+                            <strong>Protocolo de verificación de identidad</strong>
+                            Antes de autorizar el ingreso, confirme que la cédula presentada corresponda al visitante y que el documento sea original. Si existen inconsistencias entre la identidad, la fotografía o la información proporcionada, no registre el ingreso hasta verificar los datos.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono</label>
+
+                    <input type="text"
+                           name="telefono"
+                           maxlength="10"
+                           value="{% if datos %}{{ datos.telefono }}{% else %}{{ visita.telefono }}{% endif %}"
+                           class="validar-telefono {% if errores.telefono %}input-error{% endif %}"
+                           required>
+
+                    <div class="mensaje-validacion">
+                        {% if errores.telefono %}
+                            <div class="error-text">
+                                <i class="bi bi-x-circle-fill"></i>
+                                {{ errores.telefono }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Placa del vehículo</label>
+
+                    <input type="text"
+                           name="placa"
+                           maxlength="8"
+                           value="{% if datos %}{{ datos.placa }}{% else %}{{ visita.placa }}{% endif %}"
+                           class="validar-placa {% if errores.placa %}input-error{% endif %}"
+                           placeholder="Ejemplo: ABC-1234"
+                           required>
+
+                    <div class="mensaje-validacion">
+                        {% if errores.placa %}
+                            <div class="error-text">
+                                <i class="bi bi-x-circle-fill"></i>
+                                {{ errores.placa }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <h2>Información de la visita</h2>
+
+                <div class="form-group">
+                    <label>Vivienda que visita</label>
+
+                    <select name="vivienda" required>
+                        {% for vivienda in viviendas %}
+                            <option value="{{ vivienda.id }}"
+                                {% if datos.vivienda == vivienda.id|stringformat:"s" or not datos and visita.vivienda.id == vivienda.id %}selected{% endif %}>
+                                {{ vivienda.numero }} - Bloque {{ vivienda.bloque }} |
+                                {{ vivienda.residente.nombres }} {{ vivienda.residente.apellidos }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Motivo de la visita</label>
+                    <input type="text"
+                           name="motivo"
+                           value="{% if datos %}{{ datos.motivo }}{% else %}{{ visita.motivo }}{% endif %}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha y hora de ingreso</label>
+                    <input type="datetime-local"
+                           name="fecha_ingreso"
+                           value="{% if datos %}{{ datos.fecha_ingreso }}{% else %}{{ visita.fecha_ingreso|date:'Y-m-d\\TH:i' }}{% endif %}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha y hora de salida</label>
+                    <input type="datetime-local"
+                           name="fecha_salida"
+                           value="{% if datos %}{{ datos.fecha_salida }}{% else %}{{ visita.fecha_salida|date:'Y-m-d\\TH:i' }}{% endif %}"
+                           class="{% if errores.fecha_salida %}input-error{% endif %}">
+
+                    {% if errores.fecha_salida %}
+                        <div class="error-text">
+                            <i class="bi bi-x-circle-fill"></i>
+                            {{ errores.fecha_salida }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Estado</label>
+
+                    <select name="estado">
+                        <option value="En curso"
+                            {% if datos.estado == "En curso" or not datos and visita.estado == "En curso" %}selected{% endif %}>
+                            En curso
+                        </option>
+
+                        <option value="Finalizada"
+                            {% if datos.estado == "Finalizada" or not datos and visita.estado == "Finalizada" %}selected{% endif %}>
+                            Finalizada
+                        </option>
+
+                        <option value="Cancelada"
+                            {% if datos.estado == "Cancelada" or not datos and visita.estado == "Cancelada" %}selected{% endif %}>
+                            Cancelada
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea name="observaciones" rows="4">{% if datos %}{{ datos.observaciones }}{% else %}{{ visita.observaciones }}{% endif %}</textarea>
+                </div>
+
+                <div class="form-group">
+
+                    <div class="checkbox-control">
+                        <input type="checkbox"
+                               name="verificacion_identidad"
+                               id="verificacion_identidad"
+                               {% if datos.verificacion_identidad %}checked{% endif %}
+                               required>
+
+                        <label for="verificacion_identidad">
+                            Confirmo que verifiqué físicamente la identidad del visitante antes de registrar el ingreso.
+                        </label>
+                    </div>
+
+                    {% if errores.verificacion_identidad %}
+                        <div class="error-text">
+                            <i class="bi bi-x-circle-fill"></i>
+                            {{ errores.verificacion_identidad }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-save"></i>
+                        Actualizar
+                    </button>
+
+                    <a href="{% url 'visitas' %}" class="btn-secondary">Cancelar</a>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{% static 'js/validaciones.js' %}"></script>
+
+</body>
+
+</html>

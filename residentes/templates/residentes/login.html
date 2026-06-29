@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio de sesión</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <div class="background-shapes">
+        <div class="building left"></div>
+        <div class="building right"></div>
+    </div>
+
+    <div class="login-card">
+
+        <div class="logo-area">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" class="login-logo">
+        </div>
+
+        <h1>Bienvenido</h1>
+        <p>Urbanización Villa Verde</p>
+        <span class="login-subtitle">Sistema de Gestión de Urbanizaciones</span>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {% if error %}
+                <div class="login-error">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+
+            <label>Usuario</label>
+            <div class="input-group {% if error %}input-login-error{% endif %}">
+                <span><i class="bi bi-person-fill"></i></span>
+                <input type="text"
+                       name="usuario"
+                       value="{{ usuario }}"
+                       placeholder="Ingrese su usuario"
+                       required>
+            </div>
+
+            <label>Contraseña</label>
+            <div class="input-group {% if error %}input-login-error{% endif %}">
+                <span><i class="bi bi-lock-fill"></i></span>
+                <input type="password"
+                       name="contrasena"
+                       placeholder="Ingrese su contraseña"
+                       required>
+            </div>
+
+            <button type="submit">Iniciar sesión</button>
+
+        </form>
+
+        <div class="footer-login">
+            <span></span>
+            <p>Acceso exclusivo para administradores</p>
+            <span></span>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
